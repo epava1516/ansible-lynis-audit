@@ -1,0 +1,51 @@
+---
+- name: Get all tags from Lynis Github repo
+  uri:
+    url: "{{ lynis_github }}"
+  register: lynis_tags
+  delegate_to: localhost
+  run_once: true
+  
+
+- name: Set var for zipball and tarball download
+  set_fact:
+    lynis_tarball: "{{ lynis_tags['json'][0]['tarball_url'] }}"
+    lynis_zipball: "{{ lynis_tags['json'][0]['zipball_url'] }}"
+  delegate_to: localhost
+  run_once: true
+
+- name: Create path for tmp files
+  file:
+    path: "{{ tmp_dir }}"
+    state: directory
+    mode: '0755'
+  delegate_to: localhost
+  run_once: true
+
+# - name: Download Lynis last tarball from Github repo
+#   unarchive:
+#     src: "{{ lynis_tarball }}"
+#     dest: "{{ tmp_dir }}"
+#     remote_src: yes
+#     extra_opts: [--strip-components=1]
+
+- name: Download Lynis last tarball from Github repo
+  get_url:
+    url: "{{ lynis_tarball }}"
+    dest: "{{ tmp_dir }}/lynis.tar.gz"
+  delegate_to: localhost
+  run_once: true
+
+- name: Create path for tmp files
+  file:
+    path: "{{ tmp_dir }}"
+    state: directory
+    mode: '0755'
+
+- name: Download Lynis last tarball from Github repo
+  unarchive:
+    src: "{{ lynis_tarball }}"
+    dest: "{{ tmp_dir }}"
+    remote_src: yes
+    extra_opts: [--strip-components=1]
+...

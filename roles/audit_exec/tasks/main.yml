@@ -1,0 +1,6 @@
+---
+- name: Run audit
+  shell: "./lynis audit system"
+  args:
+    chdir: "{{ tmp_dir }}"
+...
